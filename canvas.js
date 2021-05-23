@@ -1,0 +1,207 @@
+// Initializin variables
+let painting = false;
+let mode = "pen";
+let line_width = 10;
+let line_color = "black";
+// let startX, startY;
+
+let undo_image = [];
+let undo_index = -1;
+let redo_image = [];
+let redo_index = -1;
+
+let canvas = null, context = null;
+
+window.addEventListener("load", () => {
+  canvas = document.getElementById("canvas");
+  context = canvas.getContext("2d");
+
+  //   Resizing
+  resizeCanvas();
+
+  //   Variables
+  Variables();
+
+  //   Functions
+  function startPosition(e) {
+    // startX = e.clientX;
+    // startY = e.clientY;
+    
+    painting = true;
+    draw(e);
+
+    e.preventDefault()
+  }
+  function finishedPosition(e) {
+    painting = false;
+    context.beginPath();
+
+    e.preventDefault()
+
+    if(e.type != "mouseout") {
+      undo_image.push(context.getImageData(0, 0, canvas.width, canvas.height));
+      undo_index += 1;
+    }
+  }
+
+  // Start drawing
+  function draw(e) {
+    if (!painting) return;
+
+    context.lineWidth = line_width;
+    if (mode == "pen") {
+      context.lineCap = "round";
+      context.strokeStyle = line_color;
+
+      context.lineTo(e.clientX, e.clientY);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(e.clientX, e.clientY);
+    }
+/*
+    else if ( mode == "square") {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = line_color;
+
+      let rectWidth = e.clientX - startX;
+      let rectHeight = e.clientY - startY;
+      context.strokeRect(startX, startY, rectWidth, rectHeight);
+    }
+    else if (mode == "fillSquare") {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = line_color;
+
+      let rectWidth = e.clientX - startX;
+      let rectHeight = e.clientY - startY;
+      context.fillRect(startX, startY, rectWidth, rectHeight);
+    }
+    else if ( mode == "circle") {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = line_color;
+
+      context.beginPath();
+      context.arc(startX, startY, Math.abs(startX-e.clientX), 0, 2 * Math.PI);
+      context.stroke();
+    }
+    else if (mode == "fillCircle") {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = line_color;
+
+      context.beginPath();
+      context.arc(startX, startY, Math.abs(startX-e.clientX), 0, 2 * Math.PI);
+      context.fill()
+    }
+*/
+    else if (mode == "eraser") {
+      context.strokeStyle = "white";
+      context.lineTo(e.clientX, e.clientY);
+      context.stroke();
+    }
+  }
+
+  //   Eventlisteners
+  canvas.addEventListener("mousedown", startPosition);
+  canvas.addEventListener("mouseup", finishedPosition);
+  canvas.addEventListener("mousemove", draw);
+});
+
+// Resizing canvas on window size change
+window.addEventListener("resize", () => resizeCanvas());
+// Resizing Canvas
+function resizeCanvas() {
+  // let ratio = Math.max(window.devicePixelRatio || 1, 1);
+  // canvas.height = window.innerHeight * ratio;
+  // canvas.width = window.innerWidth * ratio;
+  canvas.height = window.innerHeight
+  canvas.width = window.innerWidth
+}
+
+// Undo
+function Undo() {
+  if (undo_index <= 0) {
+    last_undo();
+  } else {
+    redo_image.push(undo_image[undo_index]);
+    redo_index += 1;
+
+    undo_index -= 1;
+    undo_image.pop();
+
+    context.putImageData(undo_image[undo_index], 0, 0);
+  }
+}
+
+// Redo
+function Redo() {
+  if (redo_index < 0) return
+
+  context.putImageData(redo_image[redo_index], 0, 0);
+
+  undo_image.push(redo_image[redo_index]);
+  redo_image.pop();
+  
+  redo_index -= 1;
+  undo_index += 1;
+}
+
+function last_undo() {
+  if(undo_index == 0) {
+    redo_image.push(undo_image[undo_index]);
+    redo_index += 1;
+  }
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  undo_image = [];
+  undo_index = -1;
+}
+
+// Erase All
+function clearCanvas() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Assign Variables
+function Variables() {
+  // Eraser
+  document
+    .getElementById("eraser")
+    .addEventListener("click", () => (mode = "eraser"));
+
+  // Pen
+  document
+    .getElementById("pen")
+    .addEventListener("click", () => (mode = "pen"));
+/*
+  // Square
+  document
+    .getElementById("square")
+    .addEventListener("click", () => (mode = "square"));
+
+  // Circle
+  document
+    .getElementById("circle")
+    .addEventListener("click", () => (mode = "circle"));
+
+  // Fill Square
+  document
+    .getElementById("fillSquare")
+    .addEventListener("click", () => (mode = "fillSquare"));
+
+  // Fill Circle
+  document
+    .getElementById("fillCircle")
+    .addEventListener("click", () => (mode = "fillCircle"));
+*/
+
+  // Line width
+  let slider = document.getElementById("myRange");
+  slider.oninput = function () {
+    line_width = this.value;
+  };
+
+  //   Color Picker
+  let colopPicker = document.getElementById("colorpicker");
+  colopPicker.oninput = function () {
+    line_color = this.value;
+  };
+}
