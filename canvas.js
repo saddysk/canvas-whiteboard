@@ -102,18 +102,20 @@ window.addEventListener("load", () => {
   //   Eventlisteners
   canvas.addEventListener("mousedown", startPosition);
   canvas.addEventListener("mouseup", finishedPosition);
+  canvas.addEventListener("mouseout", finishedPosition);
   canvas.addEventListener("mousemove", draw);
 });
 
 // Resizing canvas on window size change
-window.addEventListener("resize", () => resizeCanvas());
+window.addEventListener("resize", () =>	resizeCanvas());
 // Resizing Canvas
 function resizeCanvas() {
-  // let ratio = Math.max(window.devicePixelRatio || 1, 1);
-  // canvas.height = window.innerHeight * ratio;
-  // canvas.width = window.innerWidth * ratio;
+  let canvas_before_resize = context.getImageData(0, 0, canvas.width, canvas.height);
+
   canvas.height = window.innerHeight
   canvas.width = window.innerWidth
+
+  context.putImageData(canvas_before_resize, 0, 0);
 }
 
 // Undo
