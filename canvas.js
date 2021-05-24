@@ -3,6 +3,8 @@ let painting = false;
 let mode = "pen";
 let line_width = 10;
 let line_color = "black";
+let canvasWidth = window.innerWidth;
+let canvasHeight = window.innerHeight;
 // let startX, startY;
 
 let undo_image = [];
@@ -111,10 +113,8 @@ window.addEventListener("resize", () =>	resizeCanvas());
 // Resizing Canvas
 function resizeCanvas() {
   let canvas_before_resize = context.getImageData(0, 0, canvas.width, canvas.height);
-
-  canvas.height = window.innerHeight
-  canvas.width = window.innerWidth
-
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
   context.putImageData(canvas_before_resize, 0, 0);
 }
 

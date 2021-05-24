@@ -5,13 +5,16 @@
 }
 
 #canvas {
-  border: 5px solid rgb(0, 0, 0);
+  border: 1.5px solid #000000;
 }
 
 #selectFeatures {
   position: absolute;
   top: 0;
   left: 0;
+
+  border: 3px solid #7fc47fad;
+  border-radius: 7px;
 }
 .slidecontainer,
 #colorPickerContainer,
