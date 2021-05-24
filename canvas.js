@@ -1,7 +1,7 @@
 // Initializin variables
 let painting = false;
 let mode = "pen";
-let line_width = 10;
+let line_width = 4;
 let line_color = "black";
 let canvasWidth = window.innerWidth;
 let canvasHeight = window.innerHeight;
